@@ -29,31 +29,31 @@ robot-learning-log/
 │   ├── d9-reinforce/
 │   ├── d10-actor-critic/
 │   └── mini-project-dqn-vs-a2c/
-├── w3-mujoco-control/
+├── w3-mujoco/
 │   ├── d11-mujoco-anatomy/
 │   ├── d12-dynamics/
 │   ├── d13-pd-impedance/
 │   ├── d14-kinematics/
 │   └── mini-project-trajectory/
-├── w4-continuous-rl/
+├── w4-rl-robo/
 │   ├── d15-continuous/
 │   ├── d16-ppo/
 │   ├── d17-sac/
 │   ├── d18-dynamics-ensembles/
 │   └── d19-mbpo/
-├── w5-imitation-learning/
+├── w5-imi-learn/
 │   ├── d20-bc/
 │   ├── d21-dagger/
 │   ├── d22-so101-data-collection/
 │   ├── d23-act/
 │   └── d24-diffusion-policy/
-├── w6-world-models/
+├── w6-wm/
 │   ├── d25-latent-dynamics/
 │   ├── d26-dreamer/
 │   ├── d27-tdmpc2/
 │   ├── d28-uncertainty/
 │   └── mini-project-real-world-model/
-├── w7-vla/
+├── w7-vla-multi/
 │   ├── d29-vla-landscape/
 │   ├── d30-finetuning/
 │   ├── d31-generalization/
