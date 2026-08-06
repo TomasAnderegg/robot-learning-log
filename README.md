@@ -1,60 +1,95 @@
-# ============================================================
-# requirements.txt — robot-learning-log
-# Groupé par phase du programme. Installe tout d'un coup si tu
-# veux, ou décommente au fur et à mesure des semaines.
-# Testé en tête avec Python 3.10-3.11.
-# ============================================================
+# robot-learning-log
 
-# --- Base (toutes semaines) ---
-numpy
-matplotlib
-tqdm
+Programme intensif de 8 semaines (1-2h/jour) : du RL zéro aux World Models & VLA pour robotique.
+MuJoCo pour la simulation, déploiement réel sur bras **SO101** (LeRobot).
 
-# --- S1-S2 : RL bases & Deep RL (Gymnasium, PyTorch) ---
-torch
-gymnasium
-gymnasium[classic-control]   # CartPole, Pendulum
-gymnasium[toy-text]          # FrozenLake, Taxi
-gymnasium[box2d]             # LunarLander (nécessite swig, voir note ci-dessous)
+Voir `programme-robot-learning.md` pour le détail théorie/exercice/checkpoint de chaque jour.
+Une branche par semaine (`s1-rl-bases`, `s2-deep-rl`, ..., `s8-capstone`), mergée dans `main` une fois la semaine validée.
 
-# --- S3+ : MuJoCo & contrôle robotique ---
-mujoco
-dm_control
+## Structure du repo
 
-# --- S4 : RL continu avancé (comparaison PPO baseline) ---
-stable-baselines3
+```
+robot-learning-log/
+├── README.md
+├── programme-robot-learning.md      # programme complet, jour par jour
+├── requirements.txt
+├── s1-rl-bases/
+│   ├── j1-bandits/
+│   │   ├── bandit.py
+│   │   └── README.md                # notes théorie + résultats + checkpoint
+│   ├── j2-mdp/
+│   ├── j3-bellman/
+│   ├── j4-dp/
+│   ├── j5-mc-td/
+│   └── mini-projet-qlearning/
+├── s2-deep-rl/
+│   ├── j6-fonction-approx/
+│   ├── j7-dqn/
+│   ├── j8-dqn-ameliore/
+│   ├── j9-reinforce/
+│   ├── j10-actor-critic/
+│   └── mini-projet-dqn-vs-a2c/
+├── s3-mujoco-controle/
+│   ├── j11-anatomie-mujoco/
+│   ├── j12-dynamique/
+│   ├── j13-pd-impedance/
+│   ├── j14-cinematique/
+│   └── mini-projet-trajectoire/
+├── s4-rl-continu/
+│   ├── j15-continu/
+│   ├── j16-ppo/
+│   ├── j17-sac/
+│   ├── j18-ensembles-dynamique/
+│   └── j19-mbpo/
+├── s5-imitation-learning/
+│   ├── j20-bc/
+│   ├── j21-dagger/
+│   ├── j22-collecte-so101/
+│   ├── j23-act/
+│   └── j24-diffusion-policy/
+├── s6-world-models/
+│   ├── j25-dynamique-latente/
+│   ├── j26-dreamer/
+│   ├── j27-tdmpc2/
+│   ├── j28-incertitude/
+│   └── mini-projet-world-model-reel/
+├── s7-vla/
+│   ├── j29-panorama-vla/
+│   ├── j30-finetuning/
+│   ├── j31-generalisation/
+│   ├── j32-integration-wm-vla/
+│   └── mini-projet-vla-deploiement/
+└── s8-capstone/
+    ├── design/
+    ├── implementation/
+    └── deploiement-final/
+```
 
-# --- S5 : Imitation Learning (ACT, Diffusion Policy) ---
-transformers
-diffusers
-einops
+## Convention par jour
 
-# --- S5+ : LeRobot (déploiement réel SO101) ---
-# Ne pas installer via pip directement — cloner et installer en editable
-# pour rester sur une version récente compatible SO101 :
-#
-#   git clone https://github.com/huggingface/lerobot.git
-#   cd lerobot && pip install -e .
-#
-# Suivre ensuite la doc officielle LeRobot pour la calibration du SO101
-# (fichiers de config des moteurs, port USB, etc.)
+Chaque dossier `jN-nom/` contient :
+- le code de l'exercice (from scratch sauf mention contraire dans le programme)
+- un `README.md` court avec : ce que tu as compris (théorie en 3-5 lignes), résultat (courbe/métrique), le checkpoint du programme est-il atteint (✅/❌ + pourquoi).
 
-# --- S7 : VLA (fine-tuning SmolVLA / VLM) ---
-accelerate
-datasets
-huggingface-hub
+## Checklist globale
 
-# --- Suivi d'expériences (optionnel mais recommandé) ---
-tensorboard
+- [ ] S1 — Bases du RL (bandits → Q-learning tabulaire)
+- [ ] S2 — Deep RL (DQN → Actor-Critic)
+- [ ] S3 — MuJoCo & contrôle robotique + Pont SO101 #1
+- [ ] S4 — RL continu (PPO, SAC, MBPO) + Pont SO101 #2
+- [ ] S5 — Imitation Learning (BC, DAgger, ACT, Diffusion Policy) + Pont SO101 #3
+- [ ] S6 — World Models (Dreamer, TD-MPC2) + Pont SO101 #4
+- [ ] S7 — VLA (fine-tuning, généralisation) + Pont SO101 #5
+- [ ] S8 — Capstone
 
-# ============================================================
-# Notes d'installation
-# ============================================================
-# - gymnasium[box2d] nécessite `swig` installé au niveau système
-#   (Ubuntu/WSL : `sudo apt install swig` ; Windows : voir doc box2d-py).
-# - mujoco (>=2.3) embarque son propre moteur physique, pas besoin
-#   d'installer MuJoCo séparément comme avant la version open-source.
-# - Pour le GPU (recommandé à partir de S4 pour PPO/SAC, indispensable
-#   pour S6-S7), installe torch avec la bonne roue CUDA depuis
-#   https://pytorch.org/get-started/locally/ plutôt que la version
-#   CPU par défaut de ce fichier.
+## Installation
+
+Voir `requirements.txt`. Les dépendances sont groupées par phase du programme — pas besoin de tout installer dès le Jour 1 (voir commentaires dans le fichier).
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # ou .venv\Scripts\activate sous Windows
+pip install -r requirements.txt
+```
+
+`lerobot` (Semaine 3+) nécessite une installation séparée depuis le repo GitHub officiel (voir commentaire dans `requirements.txt`) car les versions évoluent vite et le paquet PyPI peut être en retard.
