@@ -1,0 +1,60 @@
+# ============================================================
+# requirements.txt — robot-learning-log
+# Grouped by program phase. Install everything at once if you
+# want, or uncomment progressively as you move through the weeks.
+# Tested against Python 3.10-3.11.
+# ============================================================
+
+# --- Base (all weeks) ---
+numpy
+matplotlib
+tqdm
+
+# --- W1-W2: RL basics & Deep RL (Gymnasium, PyTorch) ---
+torch
+gymnasium
+gymnasium[classic-control]   # CartPole, Pendulum
+gymnasium[toy-text]          # FrozenLake, Taxi
+gymnasium[box2d]             # LunarLander (requires swig, see note below)
+
+# --- W3+: MuJoCo & robotic control ---
+mujoco
+dm_control
+
+# --- W4: Advanced continuous RL (PPO baseline comparison) ---
+stable-baselines3
+
+# --- W5: Imitation Learning (ACT, Diffusion Policy) ---
+transformers
+diffusers
+einops
+
+# --- W5+: LeRobot (real SO101 deployment) ---
+# Do not install via pip directly — clone and install in editable
+# mode instead, to stay on a recent version compatible with SO101:
+#
+#   git clone https://github.com/huggingface/lerobot.git
+#   cd lerobot && pip install -e .
+#
+# Then follow the official LeRobot docs for SO101 calibration
+# (motor config files, USB port, etc.)
+
+# --- W7: VLA (SmolVLA / VLM fine-tuning) ---
+accelerate
+datasets
+huggingface-hub
+
+# --- Experiment tracking (optional but recommended) ---
+tensorboard
+
+# ============================================================
+# Installation notes
+# ============================================================
+# - gymnasium[box2d] requires `swig` installed at the system level
+#   (Ubuntu/WSL: `sudo apt install swig` ; Windows: see box2d-py docs).
+# - mujoco (>=2.3) ships its own physics engine, no need to install
+#   MuJoCo separately like before the open-source release.
+# - For GPU support (recommended from W4 onward for PPO/SAC, required
+#   for W6-W7), install torch with the right CUDA wheel from
+#   https://pytorch.org/get-started/locally/ instead of the default
+#   CPU version in this file.
