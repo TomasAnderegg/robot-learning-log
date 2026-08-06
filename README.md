@@ -1,95 +1,95 @@
 # robot-learning-log
 
-Programme intensif de 8 semaines (1-2h/jour) : du RL zéro aux World Models & VLA pour robotique.
-MuJoCo pour la simulation, déploiement réel sur bras **SO101** (LeRobot).
+Intensive 8-week program (1-2h/day): from zero RL to World Models & VLA for robotics.
+MuJoCo for simulation, real deployment on an **SO101** arm (LeRobot).
 
-Voir `programme-robot-learning.md` pour le détail théorie/exercice/checkpoint de chaque jour.
-Une branche par semaine (`s1-rl-bases`, `s2-deep-rl`, ..., `s8-capstone`), mergée dans `main` une fois la semaine validée.
+See `programme-robot-learning.md` for the full theory/exercise/checkpoint breakdown of each day.
+One branch per week (`w1-rl-basics`, `w2-deep-rl`, ..., `w8-capstone`), merged into `main` once the week is validated.
 
-## Structure du repo
+## Repo structure
 
 ```
 robot-learning-log/
 ├── README.md
-├── programme-robot-learning.md      # programme complet, jour par jour
+├── programme-robot-learning.md      # full program, day by day
 ├── requirements.txt
-├── s1-rl-bases/
-│   ├── j1-bandits/
+├── w1-rl-basics/
+│   ├── d1-bandits/
 │   │   ├── bandit.py
-│   │   └── README.md                # notes théorie + résultats + checkpoint
-│   ├── j2-mdp/
-│   ├── j3-bellman/
-│   ├── j4-dp/
-│   ├── j5-mc-td/
-│   └── mini-projet-qlearning/
-├── s2-deep-rl/
-│   ├── j6-fonction-approx/
-│   ├── j7-dqn/
-│   ├── j8-dqn-ameliore/
-│   ├── j9-reinforce/
-│   ├── j10-actor-critic/
-│   └── mini-projet-dqn-vs-a2c/
-├── s3-mujoco-controle/
-│   ├── j11-anatomie-mujoco/
-│   ├── j12-dynamique/
-│   ├── j13-pd-impedance/
-│   ├── j14-cinematique/
-│   └── mini-projet-trajectoire/
-├── s4-rl-continu/
-│   ├── j15-continu/
-│   ├── j16-ppo/
-│   ├── j17-sac/
-│   ├── j18-ensembles-dynamique/
-│   └── j19-mbpo/
-├── s5-imitation-learning/
-│   ├── j20-bc/
-│   ├── j21-dagger/
-│   ├── j22-collecte-so101/
-│   ├── j23-act/
-│   └── j24-diffusion-policy/
-├── s6-world-models/
-│   ├── j25-dynamique-latente/
-│   ├── j26-dreamer/
-│   ├── j27-tdmpc2/
-│   ├── j28-incertitude/
-│   └── mini-projet-world-model-reel/
-├── s7-vla/
-│   ├── j29-panorama-vla/
-│   ├── j30-finetuning/
-│   ├── j31-generalisation/
-│   ├── j32-integration-wm-vla/
-│   └── mini-projet-vla-deploiement/
-└── s8-capstone/
+│   │   └── README.md                # theory notes + results + checkpoint
+│   ├── d2-mdp/
+│   ├── d3-bellman/
+│   ├── d4-dp/
+│   ├── d5-mc-td/
+│   └── mini-project-qlearning/
+├── w2-deep-rl/
+│   ├── d6-function-approx/
+│   ├── d7-dqn/
+│   ├── d8-dqn-improved/
+│   ├── d9-reinforce/
+│   ├── d10-actor-critic/
+│   └── mini-project-dqn-vs-a2c/
+├── w3-mujoco-control/
+│   ├── d11-mujoco-anatomy/
+│   ├── d12-dynamics/
+│   ├── d13-pd-impedance/
+│   ├── d14-kinematics/
+│   └── mini-project-trajectory/
+├── w4-continuous-rl/
+│   ├── d15-continuous/
+│   ├── d16-ppo/
+│   ├── d17-sac/
+│   ├── d18-dynamics-ensembles/
+│   └── d19-mbpo/
+├── w5-imitation-learning/
+│   ├── d20-bc/
+│   ├── d21-dagger/
+│   ├── d22-so101-data-collection/
+│   ├── d23-act/
+│   └── d24-diffusion-policy/
+├── w6-world-models/
+│   ├── d25-latent-dynamics/
+│   ├── d26-dreamer/
+│   ├── d27-tdmpc2/
+│   ├── d28-uncertainty/
+│   └── mini-project-real-world-model/
+├── w7-vla/
+│   ├── d29-vla-landscape/
+│   ├── d30-finetuning/
+│   ├── d31-generalization/
+│   ├── d32-wm-vla-integration/
+│   └── mini-project-vla-deployment/
+└── w8-capstone/
     ├── design/
     ├── implementation/
-    └── deploiement-final/
+    └── final-deployment/
 ```
 
-## Convention par jour
+## Per-day convention
 
-Chaque dossier `jN-nom/` contient :
-- le code de l'exercice (from scratch sauf mention contraire dans le programme)
-- un `README.md` court avec : ce que tu as compris (théorie en 3-5 lignes), résultat (courbe/métrique), le checkpoint du programme est-il atteint (✅/❌ + pourquoi).
+Each `dN-name/` folder contains:
+- the exercise code (from scratch unless the program says otherwise)
+- a short `README.md` with: what you understood (3-5 lines of theory), result (plot/metric), whether the program's checkpoint was met (✅/❌ + why).
 
-## Checklist globale
+## Overall checklist
 
-- [ ] S1 — Bases du RL (bandits → Q-learning tabulaire)
-- [ ] S2 — Deep RL (DQN → Actor-Critic)
-- [ ] S3 — MuJoCo & contrôle robotique + Pont SO101 #1
-- [ ] S4 — RL continu (PPO, SAC, MBPO) + Pont SO101 #2
-- [ ] S5 — Imitation Learning (BC, DAgger, ACT, Diffusion Policy) + Pont SO101 #3
-- [ ] S6 — World Models (Dreamer, TD-MPC2) + Pont SO101 #4
-- [ ] S7 — VLA (fine-tuning, généralisation) + Pont SO101 #5
-- [ ] S8 — Capstone
+- [ ] W1 — RL fundamentals (bandits → tabular Q-learning)
+- [ ] W2 — Deep RL (DQN → Actor-Critic)
+- [ ] W3 — MuJoCo & robotic control + SO101 Bridge #1
+- [ ] W4 — Continuous RL (PPO, SAC, MBPO) + SO101 Bridge #2
+- [ ] W5 — Imitation Learning (BC, DAgger, ACT, Diffusion Policy) + SO101 Bridge #3
+- [ ] W6 — World Models (Dreamer, TD-MPC2) + SO101 Bridge #4
+- [ ] W7 — VLA (fine-tuning, generalization) + SO101 Bridge #5
+- [ ] W8 — Capstone
 
 ## Installation
 
-Voir `requirements.txt`. Les dépendances sont groupées par phase du programme — pas besoin de tout installer dès le Jour 1 (voir commentaires dans le fichier).
+See `requirements.txt`. Dependencies are grouped by program phase — no need to install everything on Day 1 (see comments in the file).
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate sous Windows
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
 ```
 
-`lerobot` (Semaine 3+) nécessite une installation séparée depuis le repo GitHub officiel (voir commentaire dans `requirements.txt`) car les versions évoluent vite et le paquet PyPI peut être en retard.
+`lerobot` (Week 3+) requires a separate install from the official GitHub repo (see comment in `requirements.txt`) since versions move fast and the PyPI package can lag behind.
