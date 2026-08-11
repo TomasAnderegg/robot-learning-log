@@ -38,6 +38,8 @@ class EpsilonGreedyAgent:
 
 if __name__ == "__main__":
 
+    np.random.seed(456)
+
     tours = 1000
     bandit = KArmBandit(k=10)
     agent = EpsilonGreedyAgent(k=10, epsilon=0.1)
