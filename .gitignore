@@ -1,0 +1,52 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Environnements virtuels ---
+.venv/
+venv/
+env/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- Outils / cache ---
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.cache/
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Gros fichiers ML / RL (données, modèles, logs) ---
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.npy
+*.npz
+*.zip
+*.tar
+*.tar.gz
+*.mp4
+*.avi
+
+data/
+datasets/
+checkpoints/
+runs/
+logs/
+wandb/
+outputs/
+results/
