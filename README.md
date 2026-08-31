@@ -7,6 +7,8 @@ Reading list cross-checked with NUS [CS 6283 — Robot Learning in the Era of Fo
 Full day-by-day breakdown (theory/exercise/checkpoint): `programme-robot-learning.md`.
 Setup: `requirements.txt`. One branch per week (`w1-rl-basics` → `w8-capstone`).
 
+Extra resources: https://apxml.com/courses/intro-to-reinforcement-learning/chapter-3-estimating-value-functions/bellman-optimality-equation
+
 ---
 
 ## Week 1 — RL fundamentals, from zero
