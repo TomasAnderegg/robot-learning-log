@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>PROGRESSION.SYS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --term-bg:#020a02;
+    --term-fg:#33ff33;
+    --term-fg-dim:#1c8f1c;
+    --term-fg-faint:#0f5c0f;
+    --term-red:#ff3b3b;
+    --term-amber:#ffb000;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--term-bg);
+    color:var(--term-fg);
+    font-family:'Share Tech Mono', monospace;
+    padding:24px 20px 40px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(51,255,51,0.05) 0px, rgba(51,255,51,0.05) 1px, transparent 1px, transparent 3px);
+    z-index:2;
+  }
+  .crt{ text-shadow:0 0 2px var(--term-fg), 0 0 6px rgba(51,255,51,0.35); }
+  .wrap{max-width:640px;margin:0 auto;position:relative;z-index:1;}
+  .rule{color:var(--term-fg-faint);white-space:pre;font-size:13px;}
+  h1{font-family:'VT323', monospace;font-size:34px;font-weight:400;letter-spacing:2px;margin:6px 0 2px;}
+  .sub{font-size:14px;color:var(--term-fg-dim);margin-bottom:14px;}
+  .section-label{font-size:13px;color:var(--term-fg-dim);margin:22px 0 8px;letter-spacing:1px;}
+  .row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
+  .barline{font-size:15px;white-space:pre;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+  .stat-box{border:1px solid var(--term-fg-faint);padding:10px 12px;font-size:13px;}
+  .stat-box .lbl{color:var(--term-fg-dim);}
+  .stat-box .val{font-family:'VT323',monospace;font-size:26px;line-height:1;margin-top:4px;}
+  .stat-box .wgt{color:var(--term-fg-faint);font-size:11px;margin-top:4px;}
+  .topic-row{display:flex;align-items:center;gap:10px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--term-fg-faint);}
+  .topic-row:last-child{border-bottom:none;}
+  .tag{font-size:12px;padding:1px 6px;border:1px solid currentColor;}
+  .tag.ok{color:var(--term-fg);}
+  .tag.open{color:var(--term-amber);}
+  .tag.locked{color:var(--term-red);opacity:0.75;}
+  .topic-name{flex:1;}
+  .topic-name.locked{color:var(--term-fg-faint);}
+  .history-row{font-size:13px;color:var(--term-fg-dim);padding:4px 0;border-bottom:1px dashed var(--term-fg-faint);}
+  .history-row:last-child{border-bottom:none;}
+  .footer{margin-top:26px;font-size:12px;color:var(--term-fg-faint);display:flex;justify-content:space-between;}
+  .note{font-size:12px;color:var(--term-fg-faint);margin-top:4px;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Dashboard de progression, régénéré à partir du fichier progression.json local, style terminal rétro</h2>
+<div class="wrap crt">
+  <h1 id="identity"></h1>
+  <div class="sub" id="tier-line"></div>
+
+  <div class="rule">════════════════════════════════════════════</div>
+  <div class="section-label">NIVEAU <span id="lvl"></span> — PALIER: <span id="tier"></span></div>
+  <div class="row"><span>progression</span><span id="xp-nums"></span></div>
+  <div class="barline" id="xp-bar"></div>
+
+  <div class="section-label">SCORES PONDÉRÉS</div>
+  <div class="stat-grid" id="stat-grid"></div>
+  <div class="row" style="margin-top:10px;"><span>score global pondéré</span><span class="crt" id="wscore"></span></div>
+
+  <div class="section-label">SUJETS</div>
+  <div id="topics"></div>
+
+  <div class="section-label">HISTORIQUE DES PROJETS NOTÉS</div>
+  <div id="history"></div>
+
+  <div class="note">
+    poids actuels — raisonnement <span id="w-r"></span>% · autonomie <span id="w-a"></span>% · qualité <span id="w-q"></span>% · progression <span id="w-p"></span>%<br>
+    fichier statique, régénéré par le skill à chaque session ou notation — pour changer les poids, demande à Claude directement dans la conversation
+  </div>
+
+  <div class="footer">
+    <span id="last-sync"></span>
+    <span>SYNC: OK (local)</span>
+  </div>
+</div>
+
+<script>
+// {
+  "identity": "apprenti",
+  "level": 1,
+  "tierIndex": 0,
+  "tierNames": ["professeur", "mentor", "collaborateur", "accelerateur"],
+  "xpCurrent": 180,
+  "xpToNext": 500,
+  "weights": { "raisonnement": 35, "autonomie": 30, "qualite": 22, "progression": 13 },
+  "scores": { "raisonnement": 55, "autonomie": 61, "qualite": 52, "progression": 50 },
+  "topics": [
+    { "name": "filtre de Kalman", "status": "locked", "requires": "aucun projet noté encore", "level": null },
+    { "name": "filtres particulaires", "status": "locked", "requires": "Kalman niveau 4", "level": null },
+    { "name": "MDP formalism (gridworld)", "status": "ok", "requires": "aucun", "level": 1 }
+  ],
+  "history": [
+    {
+      "id": "day2-gridworld-mdp",
+      "date": "2026-09-04",
+      "scores": { "raisonnement": 68, "autonomie": 88, "qualite": 58, "progression": 50 },
+      "xpGain": 180
+    }
+  ],
+  "lastUpdated": "2026-09-04"
+}
+ est remplacé par le skill avec le contenu réel de progression.json
+const STATE = {
+  "identity": "apprenti",
+  "level": 1,
+  "tierIndex": 0,
+  "tierNames": ["professeur", "mentor", "collaborateur", "accelerateur"],
+  "xpCurrent": 180,
+  "xpToNext": 500,
+  "weights": { "raisonnement": 35, "autonomie": 30, "qualite": 22, "progression": 13 },
+  "scores": { "raisonnement": 55, "autonomie": 61, "qualite": 52, "progression": 50 },
+  "topics": [
+    { "name": "filtre de Kalman", "status": "locked", "requires": "aucun projet noté encore", "level": null },
+    { "name": "filtres particulaires", "status": "locked", "requires": "Kalman niveau 4", "level": null },
+    { "name": "MDP formalism (gridworld)", "status": "ok", "requires": "aucun", "level": 1 }
+  ],
+  "history": [
+    {
+      "id": "day2-gridworld-mdp",
+      "date": "2026-09-04",
+      "scores": { "raisonnement": 68, "autonomie": 88, "qualite": 58, "progression": 50 },
+      "xpGain": 180
+    }
+  ],
+  "lastUpdated": "2026-09-04"
+}
+;
+
+function bar(pct, width){
+  const filled = Math.round((pct/100)*width);
+  return "[" + "#".repeat(filled) + "-".repeat(width-filled) + "]";
+}
+
+function weightedScore(state){
+  const w = state.weights, s = state.scores;
+  const total = w.raisonnement + w.autonomie + w.qualite + w.progression;
+  if(!total) return 0;
+  return Math.round((s.raisonnement*w.raisonnement + s.autonomie*w.autonomie + s.qualite*w.qualite + s.progression*w.progression) / total);
+}
+
+function render(state){
+  document.getElementById('identity').textContent = "> " + state.identity;
+  const tierName = state.tierNames[state.tierIndex];
+  const nextTier = state.tierNames[state.tierIndex+1] || null;
+  document.getElementById('tier-line').textContent = nextTier ? `palier: ${tierName} -> ${nextTier}` : `palier: ${tierName} (maximum atteint)`;
+  document.getElementById('lvl').textContent = state.level;
+  document.getElementById('tier').textContent = tierName;
+
+  const pct = Math.min(100, Math.round((state.xpCurrent/state.xpToNext)*100));
+  document.getElementById('xp-nums').textContent = `${state.xpCurrent} / ${state.xpToNext} xp (${pct}%)`;
+  document.getElementById('xp-bar').textContent = bar(pct, 36);
+
+  const grid = document.getElementById('stat-grid');
+  grid.innerHTML = '';
+  const labels = {raisonnement:'raisonnement', autonomie:'autonomie', qualite:'qualite', progression:'progression'};
+  Object.keys(labels).forEach(k=>{
+    const box = document.createElement('div');
+    box.className = 'stat-box';
+    box.innerHTML = `<div class="lbl">${labels[k]}</div><div class="val">${state.scores[k]}</div><div class="wgt">poids: ${state.weights[k]}%</div>`;
+    grid.appendChild(box);
+  });
+  document.getElementById('wscore').textContent = weightedScore(state) + "/100";
+
+  const topicsEl = document.getElementById('topics');
+  topicsEl.innerHTML = '';
+  state.topics.forEach(t=>{
+    const row = document.createElement('div');
+    row.className = 'topic-row';
+    let tagHtml, nameClass = '';
+    if(t.status === 'ok'){ tagHtml = `<span class="tag ok">niv ${t.level}</span>`; }
+    else if(t.status === 'open'){ tagHtml = `<span class="tag open">débloqué</span>`; }
+    else { tagHtml = `<span class="tag locked">requiert ${t.requires}</span>`; nameClass = 'locked'; }
+    row.innerHTML = `<span class="topic-name ${nameClass}">${t.name}</span>${tagHtml}`;
+    topicsEl.appendChild(row);
+  });
+
+  const histEl = document.getElementById('history');
+  histEl.innerHTML = '';
+  if(!state.history || state.history.length === 0){
+    histEl.innerHTML = '<div class="history-row">aucun projet noté encore</div>';
+  } else {
+    state.history.slice().reverse().slice(0,8).forEach(h=>{
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      row.textContent = `${h.id} — xp +${h.xpGain} — r:${h.scores.raisonnement} a:${h.scores.autonomie} q:${h.scores.qualite} p:${h.scores.progression}`;
+      histEl.appendChild(row);
+    });
+  }
+
+  document.getElementById('w-r').textContent = state.weights.raisonnement;
+  document.getElementById('w-a').textContent = state.weights.autonomie;
+  document.getElementById('w-q').textContent = state.weights.qualite;
+  document.getElementById('w-p').textContent = state.weights.progression;
+
+  document.getElementById('last-sync').textContent = state.lastUpdated
+    ? "dernière mise à jour: " + state.lastUpdated
+    : "dernière mise à jour: jamais";
+}
+
+render(STATE);
+</script>
+</body>
+</html>

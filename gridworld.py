@@ -36,7 +36,7 @@ class Gridworld:
         self.map[i,j] = self.trap
         self.trap_pos = (i,j)
 
-        self.agent_pos = (0,2)
+        self.agent_pos = (0,0)
         self.reward = 0
         self.status = 'go'
     
@@ -51,7 +51,7 @@ class Gridworld:
 
 
 
-    def step(self, a_t):
+    def step(self, a_t, o_t=self.agent_pos):
         # print("valeur", self.agent_pos)
         # print("valeur a_t", a_t)
         if('up'== a_t):
@@ -131,25 +131,42 @@ class Agent:
         self.v_values = []
         self.reward = reward
 
-    def action(self, step=0):
-        # print(step)
-        if step == 0:
-            step +=1
+    def policy(self, step=0):
+        'A policy is the way an agent is going to behave in a environment'
+
+        # # print(step)
+        # if step == 0:
+        #     step +=1
+        #     return 'up'
+        # elif step == 1:
+        #     step +=1
+        #     return 'right'
+        # elif step == 2:
+        #     step +=1 
+        #     return 'down'
+        # elif step == 3:
+        #     step +=1
+        #     return 'left'
+        # elif step == 4:
+        #     return 'done'
+        actions_prob = np.random.rand(4, 1)
+        max_action_prob = np.argmax(actions_prob) #gives the index of the max value
+        print(actions_prob)
+        # print("max value", max_action_prob)
+
+        if max_action_prob == 0:
             return 'up'
-        elif step == 1:
-            step +=1
-            return 'right'
-        elif step == 2:
-            step +=1 
+        if max_action_prob == 1:
             return 'down'
-        elif step == 3:
-            step +=1
+        if max_action_prob == 2:
             return 'left'
-        elif step == 4:
-            return 'done'
+        if max_action_prob == 3:
+            return 'right'
+
     def set_pos_reward(self, o_t, r):
         self.curr_obs = o_t
         self.reward = r + self.reward
+
 
     # def get_pos(self):
     #     print(self.curr_obs)
@@ -169,7 +186,7 @@ if __name__ == "__main__":
     #Rollout
     for t in range(5):
         print("--------------")
-        a_tp = agent.action(t)
+        a_tp = agent.policy(t)
         print(a_tp)
         o_t, reward, _= grid.step(a_t=a_tp)
         # print(o_t)
