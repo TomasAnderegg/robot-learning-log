@@ -51,70 +51,70 @@ class Gridworld:
 
 
 
-    def step(self, a_t, o_t=self.agent_pos):
+    def step(self, o_t,a_t):
         # print("valeur", self.agent_pos)
         # print("valeur a_t", a_t)
         if('up'== a_t):
-            if self.agent_pos[0] != 0:
-                self.agent_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
-                self.reward = self.map[self.agent_pos[0], self.agent_pos[1]]
-                if self.agent_pos == self.trap_pos:
+            if o_t[0] != 0:
+                o_t = (o_t[0] - 1, o_t[1])
+                self.reward = self.map[o_t[0], o_t[1]]
+                if o_t == self.trap_pos:
                     self.status = 'trap'
-                elif self.agent_pos == self.goal_pos:
+                elif o_t == self.goal_pos:
                     self.status = 'goal'
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
             else:
                 self.reward = -5
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
 
         if ('down' == a_t): 
-            if self.agent_pos[0] != (self.size-1):
-                self.agent_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
-                self.reward = self.map[self.agent_pos[0] , self.agent_pos[1]]
+            if o_t[0] != (self.size-1):
+                o_t = (o_t[0] + 1, o_t[1])
+                self.reward = self.map[o_t[0] , o_t[1]]
 
-                if self.agent_pos == self.trap_pos:
+                if o_t == self.trap_pos:
                     self.status = 'trap'
-                elif self.agent_pos == self.goal_pos:
+                elif o_t == self.goal_pos:
                     self.status = 'goal'
                     
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
             else:
                 self.reward = -5
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
     
         if('left' == a_t): 
-            if self.agent_pos[1] != 0:
-                self.agent_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
-                self.reward = self.map[self.agent_pos[0], self.agent_pos[1]]
+            if o_t[1] != 0:
+                o_t = (o_t[0], o_t[1] - 1)
+                self.reward = self.map[o_t[0], o_t[1]]
 
-                if self.agent_pos == self.trap_pos:
+                if o_t == self.trap_pos:
                     self.status = 'trap'
-                elif self.agent_pos == self.goal_pos:
+                elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
             else: 
                 self.reward = -5
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
 
         if('right' == a_t): 
-            if (self.agent_pos[1] != (self.size-1)):
-                self.agent_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
-                self.reward = self.map[self.agent_pos[0], self.agent_pos[1]]
+            if (o_t[1] != (self.size-1)):
+                o_t = (o_t[0], o_t[1] + 1)
+                self.reward = self.map[o_t[0], o_t[1]]
 
-                if self.agent_pos == self.trap_pos:
+                if o_t == self.trap_pos:
                     self.status = 'trap'
-                elif self.agent_pos == self.goal_pos:
+                elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
             else:
                 self.reward = -5
-                return self.agent_pos, self.reward, self.status
+                return o_t, self.reward, self.status
         
         if (self.goal_pos == a_t or self.trap_pos == a_t or 'done'):
             print("completed")
-            return self.agent_pos, self.reward, self.status
+            return o_t, self.reward, self.status
     def reset(self):
         self.agent_pos = (0,self.size-1)
         self.reward = 0
@@ -122,7 +122,6 @@ class Gridworld:
 
         return self.agent_pos, self.reward, self.status
         
-
         
 class Agent:
     def __init__(self, reward=0, current_obs = (0,0)):
@@ -171,12 +170,13 @@ class Agent:
     # def get_pos(self):
     #     print(self.curr_obs)
 
+
 if __name__ == "__main__":        
 
     #World 
     grid = Gridworld(size=4)
     # grid.gridconst()
-    o_t, reward, _= grid.step(a_t='up')
+    o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
     # print(reward, o_t)
 
     #Agent
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         print("--------------")
         a_tp = agent.policy(t)
         print(a_tp)
-        o_t, reward, _= grid.step(a_t=a_tp)
+        o_t, reward, _= grid.step(o_t=o_t,a_t=a_tp)
         # print(o_t)
         agent.set_pos_reward(o_t, reward)
 
