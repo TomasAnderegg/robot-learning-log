@@ -129,6 +129,9 @@ class Agent:
         self.q_values = []
         self.v_values = []
         self.reward = reward
+        self.state_val_grid = np.zeros((4,4))
+        self.num_actions = 4
+        self.gamma = 0.2
 
     def policy(self, step=0):
         'A policy is the way an agent is going to behave in a environment'
@@ -166,6 +169,37 @@ class Agent:
         self.curr_obs = o_t
         self.reward = r + self.reward
 
+    def state_function(self):
+        for i in range(len(self.state_val_grid)):
+            for j in range(len(self.state_val_grid)):    
+                for k in range(self.num_actions):
+                    if i ==0 and j == 0:
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
+                                                                                    self.state_val_grid[i][j+1] ])
+                    elif i == 0:
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] +  
+                                                                                    self.state_val_grid[i][j+1] +
+                                                                                    self.state_val_grid[i][j-1] ])
+                    elif j == (self.num_actions-1):
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] +  
+                                                                                    self.state_val_grid[i][j-1] ])
+                    elif j == 0:
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
+                                                                                    self.state_val_grid[i-1][j] + 
+                                                                                    self.state_val_grid[i][j+1] ]) 
+                    elif i == (self.num_actions-1):
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i-1][j] + 
+                                                                                    self.state_val_grid[i][j+1] +
+                                                                                    self.state_val_grid[i][j-1] ])
+                    elif i == (self.num_actions-1) and j == 0:
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i-1][j] + 
+                                                                                    self.state_val_grid[i][j+1]])
+                    else:                
+                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
+                                                                                self.state_val_grid[i-1][j] + 
+                                                                                self.state_val_grid[i][j+1] +
+                                                                                self.state_val_grid[i][j-1] ])
+        return self.state_val_grid
 
     # def get_pos(self):
     #     print(self.curr_obs)
@@ -191,6 +225,7 @@ if __name__ == "__main__":
         o_t, reward, _= grid.step(o_t=o_t,a_t=a_tp)
         # print(o_t)
         agent.set_pos_reward(o_t, reward)
+        val_grid = agent.state_function()
 
     o_t, reward, status = grid.reset()
     agent.set_pos_reward(o_t, reward)        
