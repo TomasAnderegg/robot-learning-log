@@ -170,36 +170,54 @@ class Agent:
         self.reward = r + self.reward
 
     def state_function(self):
-        for i in range(len(self.state_val_grid)):
-            for j in range(len(self.state_val_grid)):    
+        # print(type(self.state_val_grid))
+        # print(2.0*(3))
+        # print(self.state_val_grid[1][1])
+        # print(self.state_val_grid(1)(1))
+
+        # print(len(self.state_val_grid))
+        # print(self.state_val_grid)
+        state_val_grid = np.array(self.state_val_grid)
+        print(type(state_val_grid))
+        for i in range(len(state_val_grid)):
+            print(i)
+            for j in range(len(state_val_grid)):
+                print('j',j)    
                 for k in range(self.num_actions):
                     if i ==0 and j == 0:
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
-                                                                                    self.state_val_grid[i][j+1] ])
-                    elif i == 0:
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] +  
-                                                                                    self.state_val_grid[i][j+1] +
-                                                                                    self.state_val_grid[i][j-1] ])
-                    elif j == (self.num_actions-1):
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] +  
-                                                                                    self.state_val_grid[i][j-1] ])
-                    elif j == 0:
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
-                                                                                    self.state_val_grid[i-1][j] + 
-                                                                                    self.state_val_grid[i][j+1] ]) 
-                    elif i == (self.num_actions-1):
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i-1][j] + 
-                                                                                    self.state_val_grid[i][j+1] +
-                                                                                    self.state_val_grid[i][j-1] ])
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
+                                                                                    state_val_grid[i][j+1] ))
+                    elif i == 0 and j != (self.num_actions-1):
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
+                                                                                    state_val_grid[i][j+1] +
+                                                                                    state_val_grid[i][j-1] ))
+                    elif i == 0 and j == (self.num_actions-1):
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
+                                                                                state_val_grid[i][j-1] ))
+                    elif j == (self.num_actions-1) and i != (self.num_actions-1):
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
+                                                                                    state_val_grid[i][j-1] +
+                                                                                    state_val_grid[i-1][j]))
+                    elif j == (self.num_actions-1) and i == (self.num_actions-1):
+                                            state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] +  
+                                                                                                        state_val_grid[i][j-1] ))
+                    elif j == 0 and i != (self.num_actions-1):
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
+                                                                                    state_val_grid[i-1][j] + 
+                                                                                    state_val_grid[i][j+1] )) 
                     elif i == (self.num_actions-1) and j == 0:
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i-1][j] + 
-                                                                                    self.state_val_grid[i][j+1]])
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] + 
+                                                                                    state_val_grid[i][j+1]))
+                    elif i == (self.num_actions-1) and j != 0:
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] + 
+                                                                                    state_val_grid[i][j+1] +
+                                                                                    state_val_grid[i][j-1]))
                     else:                
-                        self.state_val_grid[i][j] += 1/4*(self.reward + self.gamma*[self.state_val_grid[i+1][j] + 
-                                                                                self.state_val_grid[i-1][j] + 
-                                                                                self.state_val_grid[i][j+1] +
-                                                                                self.state_val_grid[i][j-1] ])
-        return self.state_val_grid
+                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
+                                                                                state_val_grid[i-1][j] + 
+                                                                                state_val_grid[i][j+1] +
+                                                                                state_val_grid[i][j-1] ))
+        return state_val_grid
 
     # def get_pos(self):
     #     print(self.curr_obs)
