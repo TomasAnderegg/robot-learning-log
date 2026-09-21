@@ -57,64 +57,68 @@ class Gridworld:
         if('up'== a_t):
             if o_t[0] != 0:
                 o_t = (o_t[0] - 1, o_t[1])
-                self.reward = self.map[o_t[0], o_t[1]]
+                reward = self.map[o_t[0], o_t[1]]
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
-                return o_t, self.reward, self.status
+                return o_t, reward, self.status
             else:
-                self.reward = -5
-                return o_t, self.reward, self.status
+                reward = -5
+                return o_t,  reward, self.status
 
         if ('down' == a_t): 
             if o_t[0] != (self.size-1):
                 o_t = (o_t[0] + 1, o_t[1])
-                self.reward = self.map[o_t[0] , o_t[1]]
+                reward = self.map[o_t[0] , o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
                     
-                return o_t, self.reward, self.status
+                return o_t,  reward, self.status
             else:
                 self.reward = -5
-                return o_t, self.reward, self.status
+                return o_t,  reward, self.status
     
         if('left' == a_t): 
             if o_t[1] != 0:
                 o_t = (o_t[0], o_t[1] - 1)
-                self.reward = self.map[o_t[0], o_t[1]]
+                reward = self.map[o_t[0], o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return o_t, self.reward, self.status
+                return o_t,  reward, self.status
             else: 
-                self.reward = -5
-                return o_t, self.reward, self.status
+                reward = -5
+                return o_t,  reward, self.status
 
         if('right' == a_t): 
             if (o_t[1] != (self.size-1)):
                 o_t = (o_t[0], o_t[1] + 1)
-                self.reward = self.map[o_t[0], o_t[1]]
+                reward = self.map[o_t[0], o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return o_t, self.reward, self.status
+                return o_t,  reward, self.status
             else:
-                self.reward = -5
-                return o_t, self.reward, self.status
+                reward = -5
+                return o_t,  reward, self.status
         
         if (self.goal_pos == a_t or self.trap_pos == a_t or 'done'):
             print("completed")
-            return o_t, self.reward, self.status
+            return o_t,  reward, self.status
+    
+    def get_map(self):
+        return self.map
+    
     def reset(self):
         self.agent_pos = (0,self.size-1)
         self.reward = 0
@@ -124,36 +128,22 @@ class Gridworld:
         
         
 class Agent:
-    def __init__(self, reward=0, current_obs = (0,0)):
+    def __init__(self, reward=0, current_obs = (0,0), map_world = np.full((4,4), -1)):
         self.curr_obs = current_obs
         self.q_values = []
         self.v_values = []
         self.reward = reward
         self.state_val_grid = np.zeros((4,4))
         self.num_actions = 4
+        self.map_world = map_world
         self.gamma = 0.2
 
     def policy(self, step=0):
-        'A policy is the way an agent is going to behave in a environment'
+        'A policy is the way an agent is going to behave in an environment'
 
-        # # print(step)
-        # if step == 0:
-        #     step +=1
-        #     return 'up'
-        # elif step == 1:
-        #     step +=1
-        #     return 'right'
-        # elif step == 2:
-        #     step +=1 
-        #     return 'down'
-        # elif step == 3:
-        #     step +=1
-        #     return 'left'
-        # elif step == 4:
-        #     return 'done'
         actions_prob = np.random.rand(4, 1)
         max_action_prob = np.argmax(actions_prob) #gives the index of the max value
-        print(actions_prob)
+        # print(actions_prob)
         # print("max value", max_action_prob)
 
         if max_action_prob == 0:
@@ -167,60 +157,53 @@ class Agent:
 
     def set_pos_reward(self, o_t, r):
         self.curr_obs = o_t
-        self.reward = r + self.reward
+        self.reward = r 
 
     def state_function(self):
-        # print(type(self.state_val_grid))
-        # print(2.0*(3))
-        # print(self.state_val_grid[1][1])
-        # print(self.state_val_grid(1)(1))
+        'V(s) implementation'
 
-        # print(len(self.state_val_grid))
-        # print(self.state_val_grid)
-        state_val_grid = np.array(self.state_val_grid)
-        print(type(state_val_grid))
-        for i in range(len(state_val_grid)):
-            print(i)
-            for j in range(len(state_val_grid)):
-                print('j',j)    
-                for k in range(self.num_actions):
-                    if i ==0 and j == 0:
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
-                                                                                    state_val_grid[i][j+1] ))
-                    elif i == 0 and j != (self.num_actions-1):
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
-                                                                                    state_val_grid[i][j+1] +
-                                                                                    state_val_grid[i][j-1] ))
-                    elif i == 0 and j == (self.num_actions-1):
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
-                                                                                state_val_grid[i][j-1] ))
-                    elif j == (self.num_actions-1) and i != (self.num_actions-1):
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] +  
-                                                                                    state_val_grid[i][j-1] +
-                                                                                    state_val_grid[i-1][j]))
-                    elif j == (self.num_actions-1) and i == (self.num_actions-1):
-                                            state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] +  
-                                                                                                        state_val_grid[i][j-1] ))
-                    elif j == 0 and i != (self.num_actions-1):
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
-                                                                                    state_val_grid[i-1][j] + 
-                                                                                    state_val_grid[i][j+1] )) 
-                    elif i == (self.num_actions-1) and j == 0:
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] + 
-                                                                                    state_val_grid[i][j+1]))
-                    elif i == (self.num_actions-1) and j != 0:
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i-1][j] + 
-                                                                                    state_val_grid[i][j+1] +
-                                                                                    state_val_grid[i][j-1]))
-                    else:                
-                        state_val_grid[i][j] += 1/4*(self.reward + self.gamma*(state_val_grid[i+1][j] + 
-                                                                                state_val_grid[i-1][j] + 
-                                                                                state_val_grid[i][j+1] +
-                                                                                state_val_grid[i][j-1] ))
-        return state_val_grid
+        # state_val_grid = np.array(self.state_val_grid)
+        # print(type(state_val_grid))
+        for i in range(len(self.state_val_grid)):
+            # print(i)
+            for j in range(len(self.state_val_grid)):
+                # print('j',j)    
+                if i ==0 and j == 0:
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                                                                                self.state_val_grid[i][j+1] ))
+                elif i == 0 and j != (self.num_actions-1):
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                                                                                self.state_val_grid[i][j+1] +
+                                                                                self.state_val_grid[i][j-1] ))
+                elif i == 0 and j == (self.num_actions-1):
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                                                                            self.state_val_grid[i][j-1] ))
+                elif j == (self.num_actions-1) and i != (self.num_actions-1):
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                                                                                self.state_val_grid[i][j-1] +
+                                                                                self.state_val_grid[i-1][j]))
+                elif j == (self.num_actions-1) and i == (self.num_actions-1):
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] +  
+                                                                                self.state_val_grid[i][j-1] ))
+                elif j == 0 and i != (self.num_actions-1):
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                                                                                self.state_val_grid[i-1][j] + 
+                                                                                self.state_val_grid[i][j+1] )) 
+                elif i == (self.num_actions-1) and j == 0:
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] + 
+                                                                                self.state_val_grid[i][j+1]))
+                elif i == (self.num_actions-1) and j != 0:
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] + 
+                                                                                self.state_val_grid[i][j+1] +
+                                                                                self.state_val_grid[i][j-1]))
+                else:                
+                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                                                                                self.state_val_grid[i-1][j] + 
+                                                                                self.state_val_grid[i][j+1] +
+                                                                                self.state_val_grid[i][j-1] ))
+    # state_val_grid = self.state_val_grid.copy() 
+        return self.state_val_grid.copy()
 
-    # def get_pos(self):
-    #     print(self.curr_obs)
 
 
 if __name__ == "__main__":        
@@ -228,22 +211,31 @@ if __name__ == "__main__":
     #World 
     grid = Gridworld(size=4)
     # grid.gridconst()
-    o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
+    # o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
     # print(reward, o_t)
 
     #Agent
-    agent = Agent(reward=0, current_obs=o_t)
+    agent = Agent(reward=0, current_obs=(0,0), map_world=grid.get_map())
     # print(agent.get_pos())
-
+    val_old = np.zeros((4,4))
+    val_grid = agent.state_function()
+    delta_norm = np.linalg.norm((val_grid - val_old))
+    print(val_grid)
     #Rollout
-    for t in range(5):
-        print("--------------")
-        a_tp = agent.policy(t)
-        print(a_tp)
-        o_t, reward, _= grid.step(o_t=o_t,a_t=a_tp)
+    while delta_norm > 1e-3:
+        # print("--------------")
+        # a_tp = agent.policy(t)
+        # print(a_tp)
+        # o_t, reward, _= grid.step(o_t=o_t,a_t=a_tp)
         # print(o_t)
-        agent.set_pos_reward(o_t, reward)
+        # agent.set_pos_reward(o_t, reward)
         val_grid = agent.state_function()
+        # print("------For sweep: ",t,"-----------------")
+        # print(id(val_grid))
+        # print(id(val_old))
+        delta_norm = np.linalg.norm((val_grid - val_old))
+        val_old = val_grid.copy()
+        print(delta_norm)
 
     o_t, reward, status = grid.reset()
     agent.set_pos_reward(o_t, reward)        
