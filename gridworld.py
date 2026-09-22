@@ -46,7 +46,7 @@ class Gridworld:
         # print(self.agent_pos[0])
         # print(self.agent_pos[1])
         # print(self.map[self.agent_pos[0],self.agent_pos[1]])
-        # print(self.map)
+        print(self.map)
         # print(np.random.randint(self.size))
 
 
@@ -169,40 +169,40 @@ class Agent:
             for j in range(len(self.state_val_grid)):
                 # print('j',j)    
                 if i ==0 and j == 0:
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] + 
                                                                                 self.state_val_grid[i][j+1] ))
                 elif i == 0 and j != (self.num_actions-1):
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] +  
                                                                                 self.state_val_grid[i][j+1] +
                                                                                 self.state_val_grid[i][j-1] ))
                 elif i == 0 and j == (self.num_actions-1):
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] +  
                                                                             self.state_val_grid[i][j-1] ))
                 elif j == (self.num_actions-1) and i != (self.num_actions-1):
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] +  
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] +  
                                                                                 self.state_val_grid[i][j-1] +
                                                                                 self.state_val_grid[i-1][j]))
                 elif j == (self.num_actions-1) and i == (self.num_actions-1):
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] +  
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i-1][j] +  
                                                                                 self.state_val_grid[i][j-1] ))
                 elif j == 0 and i != (self.num_actions-1):
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] + 
                                                                                 self.state_val_grid[i-1][j] + 
                                                                                 self.state_val_grid[i][j+1] )) 
                 elif i == (self.num_actions-1) and j == 0:
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] + 
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i-1][j] + 
                                                                                 self.state_val_grid[i][j+1]))
                 elif i == (self.num_actions-1) and j != 0:
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i-1][j] + 
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i-1][j] + 
                                                                                 self.state_val_grid[i][j+1] +
                                                                                 self.state_val_grid[i][j-1]))
                 else:                
-                    self.state_val_grid[i][j] = 1/4*(self.reward + self.gamma*(self.state_val_grid[i+1][j] + 
+                    self.state_val_grid[i][j] = 1/4*(self.map_world[i][j] + self.gamma*(self.state_val_grid[i+1][j] + 
                                                                                 self.state_val_grid[i-1][j] + 
                                                                                 self.state_val_grid[i][j+1] +
                                                                                 self.state_val_grid[i][j-1] ))
     # state_val_grid = self.state_val_grid.copy() 
-        return self.state_val_grid.copy()
+        return self.state_val_grid
 
 
 
@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     #World 
     grid = Gridworld(size=4)
-    # grid.gridconst()
+    grid.gridconst()
     # o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
     # print(reward, o_t)
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     val_old = np.zeros((4,4))
     val_grid = agent.state_function()
     delta_norm = np.linalg.norm((val_grid - val_old))
-    print(val_grid)
+    # print(val_grid)
     #Rollout
     while delta_norm > 1e-3:
         # print("--------------")
@@ -235,8 +235,11 @@ if __name__ == "__main__":
         # print(id(val_old))
         delta_norm = np.linalg.norm((val_grid - val_old))
         val_old = val_grid.copy()
-        print(delta_norm)
+        # print(delta_norm)
+        # print(val_grid)
+        # print(val_grid)
 
+    print(val_grid)
     o_t, reward, status = grid.reset()
     agent.set_pos_reward(o_t, reward)        
 
