@@ -204,13 +204,89 @@ class Agent:
     # state_val_grid = self.state_val_grid.copy() 
         return self.state_val_grid
 
+    def value_function(self):
+        'V(s) implementation'
+
+        val_grid_opt = np.zeros((4,4))
+        action_grid = np.zeros((4,4))
+        # print(type(state_val_grid))
+        for i in range(len(val_grid_opt)):
+            # print(i)
+            for j in range(len(val_grid_opt)):
+                # print('j',j)    
+                if i ==0 and j == 0:
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j], 
+                                                                                val_grid_opt[i][j+1] )))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j],val_grid_opt[i][j+1]))
+                elif i == 0 and j != (self.num_actions-1):
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j],  
+                                                                                val_grid_opt[i][j+1],
+                                                                                val_grid_opt[i][j-1] )))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j],val_grid_opt[i][j+1],val_grid_opt[i][j-1] ))
+                elif i == 0 and j == (self.num_actions-1):
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j],  
+                                                                            val_grid_opt[i][j-1] )))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j],val_grid_opt[i][j-1] ))
+
+                elif j == (self.num_actions-1) and i != (self.num_actions-1):
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j],  
+                                                                                val_grid_opt[i][j-1],
+                                                                                val_grid_opt[i-1][j])))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j],val_grid_opt[i][j-1],val_grid_opt[i-1][j]))
+
+                elif j == (self.num_actions-1) and i == (self.num_actions-1):
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i-1][j],  
+                                                                                val_grid_opt[i][j-1] )))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i-1][j],val_grid_opt[i][j-1] ))
+
+                elif j == 0 and i != (self.num_actions-1):
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j], 
+                                                                                val_grid_opt[i-1][j], 
+                                                                                val_grid_opt[i][j+1] ))) 
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j], val_grid_opt[i-1][j], val_grid_opt[i][j+1] ))
+
+                elif i == (self.num_actions-1) and j == 0:
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i-1][j], 
+                                                                                val_grid_opt[i][j+1])))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i-1][j], val_grid_opt[i][j+1]))
+
+                elif i == (self.num_actions-1) and j != 0:
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i-1][j], 
+                                                                                val_grid_opt[i][j+1],
+                                                                                val_grid_opt[i][j-1])))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i-1][j],val_grid_opt[i][j+1],val_grid_opt[i][j-1]))
+                else:                
+                    val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.argmax((val_grid_opt[i+1][j], 
+                                                                                val_grid_opt[i-1][j], 
+                                                                                val_grid_opt[i][j+1],
+                                                                                val_grid_opt[i][j-1] )))
+
+                    action_grid[i][j] = np.argmax((val_grid_opt[i+1][j], val_grid_opt[i-1][j], val_grid_opt[i][j+1],val_grid_opt[i][j-1] ))
+
+    # state_val_grid = self.state_val_grid.copy() 
+        return val_grid_opt, action_grid
+    
+    def set_val_grid(self, val_grid = np.zeros((4,4))):
+        self.state_val_grid = val_grid
+
+    def optimal_policy(self, val_grid = np.zeros((4,4))):
+        pass
+
 
 
 if __name__ == "__main__":        
 
     #World 
     grid = Gridworld(size=4)
-    grid.gridconst()
+    # grid.gridconst()
     # o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
     # print(reward, o_t)
 
@@ -222,24 +298,33 @@ if __name__ == "__main__":
     delta_norm = np.linalg.norm((val_grid - val_old))
     # print(val_grid)
     #Rollout
-    while delta_norm > 1e-3:
-        # print("--------------")
-        # a_tp = agent.policy(t)
-        # print(a_tp)
-        # o_t, reward, _= grid.step(o_t=o_t,a_t=a_tp)
-        # print(o_t)
-        # agent.set_pos_reward(o_t, reward)
+    while delta_norm > 1e-3: #threshold for convergence of V(s)
+        
         val_grid = agent.state_function()
-        # print("------For sweep: ",t,"-----------------")
-        # print(id(val_grid))
-        # print(id(val_old))
+
+        #Policy Evaluation
         delta_norm = np.linalg.norm((val_grid - val_old))
         val_old = val_grid.copy()
-        # print(delta_norm)
-        # print(val_grid)
-        # print(val_grid)
+
+    agent.set_val_grid(val_grid=val_grid)
+
+    #Optimal Value Function
+
+    val_old_opt = np.zeros((4,4))
+    val_opt_current,_ = agent.value_function()
+    delta_norm_opt = np.linalg.norm((val_opt_current - val_old_opt))
+
+    while delta_norm_opt > 1e-3: #threshold for convergence of V(s)
+            
+            val_opt_current,_ = agent.value_function()
+            delta_norm_opt = np.linalg.norm((val_opt_current - val_old_opt))
+            val_old_opt = val_opt_current.copy()
+        
+    val_opt_current, action_grid = agent.value_function()
 
     print(val_grid)
+    print(val_opt_current)
+    print(action_grid)
     o_t, reward, status = grid.reset()
     agent.set_pos_reward(o_t, reward)        
 
