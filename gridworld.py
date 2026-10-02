@@ -154,6 +154,8 @@ class Agent:
             return 'left'
         if actions_prob == 3:
             return 'right'
+        if actions_prob == 4:
+            return 'still'
 
     def set_pos_reward(self, o_t, r):
         self.curr_obs = o_t
@@ -209,68 +211,74 @@ class Agent:
         # print("valeur dans policy improvement:", self.state_val_grid)
         val_grid_opt = np.zeros((4,4))
         action_grid = np.zeros((4,4))
+        trap = np.min(self.state_val_grid)
+        goal = np.max(self.state_val_grid)
+        print("trap value", trap)
+        print("goal value", goal)
         # print(type(state_val_grid))
         for i in range(len(val_grid_opt)):
             # print(i)
             for j in range(len(val_grid_opt)):
-                # print('j',j)    
-                if i ==0 and j == 0:
-                    # val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
-                    #                                                             self.state_val_grid[i][j+1] )))
+                # print('j',j)
+                if not(goal != self.state_val_grid[i][j]) or (trap != self.state_val_grid[i][j]):    
+                    if i ==0 and j == 0:
+                        # val_grid_opt[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
+                        #                                                             self.state_val_grid[i][j+1] )))
 
-                    action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j+1]),0)
-                elif i == 0 and j != (self.num_actions-1):
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
-                    #                                                             self.state_val_grid[i][j+1],
-                    #                                                             self.state_val_grid[i][j-1] )))
+                        action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j+1],0,0))
+                    elif i == 0 and j != (self.num_actions-1):
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
+                        #                                                             self.state_val_grid[i][j+1],
+                        #                                                             self.state_val_grid[i][j-1] )))
 
-                    action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],self.state_val_grid[i][j+1] ))
-                elif i == 0 and j == (self.num_actions-1):
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
-                    #                                                         self.state_val_grid[i][j-1] )))
+                        action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],self.state_val_grid[i][j+1],0 ))
+                    elif i == 0 and j == (self.num_actions-1):
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
+                        #                                                         self.state_val_grid[i][j-1] )))
 
-                    action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],0 ))
+                        action_grid[i][j] = np.argmax((0,self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],0,0 ))
 
-                elif j == (self.num_actions-1) and i != (self.num_actions-1):
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
-                    #                                                             self.state_val_grid[i][j-1],
-                    #                                                             self.state_val_grid[i-1][j])))
+                    elif j == (self.num_actions-1) and i != (self.num_actions-1):
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j],  
+                        #                                                             self.state_val_grid[i][j-1],
+                        #                                                             self.state_val_grid[i-1][j])))
 
-                    action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j], self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],0))
+                        action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j], self.state_val_grid[i+1][j],self.state_val_grid[i][j-1],0,0))
 
-                elif j == (self.num_actions-1) and i == (self.num_actions-1):
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j],  
-                    #                                                             self.state_val_grid[i][j-1] )))
+                    elif j == (self.num_actions-1) and i == (self.num_actions-1):
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j],  
+                        #                                                             self.state_val_grid[i][j-1] )))
 
-                    action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0,self.state_val_grid[i][j-1],0 ))
+                        action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0,self.state_val_grid[i][j-1],0,0 ))
 
-                elif j == 0 and i != (self.num_actions-1):
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
-                    #                                                             self.state_val_grid[i-1][j], 
-                    #                                                             self.state_val_grid[i][j+1] ))) 
+                    elif j == 0 and i != (self.num_actions-1):
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
+                        #                                                             self.state_val_grid[i-1][j], 
+                        #                                                             self.state_val_grid[i][j+1] ))) 
 
-                    action_grid[i][j] = np.argmax((0, self.state_val_grid[i+1][j], self.state_val_grid[i-1][j], self.state_val_grid[i][j+1] ))
+                        action_grid[i][j] = np.argmax((0, self.state_val_grid[i+1][j], self.state_val_grid[i-1][j], self.state_val_grid[i][j+1],0 ))
 
-                elif i == (self.num_actions-1) and j == 0:
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j], 
-                    #                                                             self.state_val_grid[i][j+1])))
+                    elif i == (self.num_actions-1) and j == 0:
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j], 
+                        #                                                             self.state_val_grid[i][j+1])))
 
-                    action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0,0, self.state_val_grid[i][j+1]))
+                        action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0,0, self.state_val_grid[i][j+1],0))
 
-                elif i == (self.num_actions-1) and j != 0:
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j], 
-                    #                                                             self.state_val_grid[i][j+1],
-                    #                                                             self.state_val_grid[i][j-1])))
+                    elif i == (self.num_actions-1) and j != 0:
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i-1][j], 
+                        #                                                             self.state_val_grid[i][j+1],
+                        #                                                             self.state_val_grid[i][j-1])))
 
-                    action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0, self.state_val_grid[i][j-1],self.state_val_grid[i][j+1]))
-                else:                
-                    # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
-                    #                                                             self.state_val_grid[i-1][j], 
-                    #                                                             self.state_val_grid[i][j+1],
-                    #                                                             self.state_val_grid[i][j-1] )))
+                        action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j],0, self.state_val_grid[i][j-1],self.state_val_grid[i][j+1],0))
+                    else:                
+                        # self.state_val_grid[i][j] = (self.map_world[i][j] + self.gamma*np.max((self.state_val_grid[i+1][j], 
+                        #                                                             self.state_val_grid[i-1][j], 
+                        #                                                             self.state_val_grid[i][j+1],
+                        #                                                             self.state_val_grid[i][j-1] )))
 
-                    action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j], self.state_val_grid[i+1][j], self.state_val_grid[i][j-1],self.state_val_grid[i][j+1] ))
-
+                        action_grid[i][j] = np.argmax((self.state_val_grid[i-1][j], self.state_val_grid[i+1][j], self.state_val_grid[i][j-1],self.state_val_grid[i][j+1],0 ))
+                else:
+                    action_grid[i][j] = np.argmax((0,0,0,0,1))
     # state_val_grid = self.state_val_grid.copy() 
         return self.state_val_grid, action_grid
     
