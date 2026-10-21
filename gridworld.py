@@ -56,67 +56,70 @@ class Gridworld:
     def step(self, o_t,a_t):
         # print("valeur", self.agent_pos)
         # print("valeur a_t", a_t)
+        if('still' == a_t):
+            self.status = 'still'
+            return o_t, a_t, self.status
         if('up'== a_t):
             if o_t[0] != 0:
                 o_t = (o_t[0] - 1, o_t[1])
-                reward = self.map[o_t[0], o_t[1]]
+                self.reward = self.map[o_t[0], o_t[1]]
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
-                return o_t, reward, self.status
+                return o_t, self.reward, self.status
             else:
-                reward = -5
-                return o_t,  reward, self.status
+                self.reward = -5
+                return o_t,  self.reward, self.status
 
         if ('down' == a_t): 
             if o_t[0] != (self.size-1):
                 o_t = (o_t[0] + 1, o_t[1])
-                reward = self.map[o_t[0] , o_t[1]]
+                self.reward = self.map[o_t[0] , o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
                     
-                return o_t,  reward, self.status
+                return o_t,  self.reward, self.status
             else:
                 self.reward = -5
-                return o_t,  reward, self.status
+                return o_t,  self.reward, self.status
     
         if('left' == a_t): 
             if o_t[1] != 0:
                 o_t = (o_t[0], o_t[1] - 1)
-                reward = self.map[o_t[0], o_t[1]]
+                self.reward = self.map[o_t[0], o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return o_t,  reward, self.status
+                return o_t,  self.reward, self.status
             else: 
-                reward = -5
-                return o_t,  reward, self.status
+                self.reward = -5
+                return o_t,  self.reward, self.status
 
         if('right' == a_t): 
             if (o_t[1] != (self.size-1)):
                 o_t = (o_t[0], o_t[1] + 1)
-                reward = self.map[o_t[0], o_t[1]]
+                self.reward = self.map[o_t[0], o_t[1]]
 
                 if o_t == self.trap_pos:
                     self.status = 'trap'
                 elif o_t == self.goal_pos:
                     self.status = 'goal'
 
-                return o_t,  reward, self.status
+                return o_t,  self.reward, self.status
             else:
-                reward = -5
-                return o_t,  reward, self.status
+                self.reward = -5
+                return o_t,  self.reward, self.status
         
         if (self.goal_pos == a_t or self.trap_pos == a_t or 'done'):
             print("completed")
-            return o_t,  reward, self.status
+            return o_t,  self.reward, self.status
     
     def get_map(self):
         return self.map
@@ -317,8 +320,8 @@ if __name__ == "__main__":
     grid = Gridworld(size=4)
     grid.gridconst()
     # grid.reset()
-    # o_t, reward, _= grid.step(o_t=(0,0),a_t='up')
-    # print(reward, o_t)
+    # o_t, reward, _= grid.step(o_t=(3,0),a_t='down')
+    # print("grid:",reward, o_t)
 
     #Agent
     agent = Agent(reward=0, current_obs=(0,0), map_world=grid.get_map())
@@ -327,11 +330,11 @@ if __name__ == "__main__":
     # print("policy:", agent.policy().shape)
     val_old = np.zeros((4,4))
     for i in range(ROLLOUT):
-        delta_norm = np.linalg.norm(val_old - agent.policy_eval(agent.policy()))
+        delta_norm = np.linalg.norm(val_old - agent.policy_eval(grid.step,agent.policy(value= (1/4,1/4,1/4,1/4))))
         print("delta:-------", delta_norm)
         while delta_norm > 1e-3:
 
-            val_grid = agent.policy_eval(grid.step(),agent.policy(value= (1/4,1/4,1/4,1/4)))
+            val_grid = agent.policy_eval(grid.step,agent.policy(value= (1/4,1/4,1/4,1/4)))
 
             #Policy Evaluation
             delta_norm = np.linalg.norm((val_grid - val_old))
